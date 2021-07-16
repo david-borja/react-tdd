@@ -1,9 +1,9 @@
-import { storage } from '../lib/storage';
+import { storage } from "../lib/storage";
 
 export const saveUsername = (username) => {
-  storage.save({ key:'username', value: username });
+  storage.save({ key: "username", value: username });
 };
 
 export const getUsername = () => {
-  return storage.get({ key:'username' });
+  return storage.get({ key: "username" });
 };
