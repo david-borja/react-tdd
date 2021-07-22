@@ -1,11 +1,25 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
+import React from "react";
+import { render, screen } from "@testing-library/react";
 
-import HelloWorld from './hello-world';
+import HelloWorld from "./hello-world";
 
-test('renders hello world', () => {
+test("renders hello world", () => {
   render(<HelloWorld />);
 
   const title = screen.getByText(/hello world/i);
   expect(title).toBeInTheDocument();
+  screen.debug();
 });
+
+// GIVEN CODE
+// import React from 'react';
+// import { render, screen } from '@testing-library/react';
+
+// import HelloWorld from './hello-world';
+
+// test('renders hello world', () => {
+//   render(<HelloWorld />);
+
+//   const title = screen.getByText(/hello world/i);
+//   expect(title).toBeInTheDocument();
+// });

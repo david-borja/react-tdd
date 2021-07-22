@@ -1,0 +1,17 @@
+{
+  "extends": [
+    "react-app",
+    "airbnb",
+    "plugin:jsx-a11y/recommended",
+    // substituted
+    // "prettier",
+    // "prettier/react"
+    // with the following line, as recommended when using "plugin:prettier/recommended". Check https://github.com/prettier/eslint-config-prettier/blob/main/CHANGELOG.md
+    "plugin:prettier/recommended",
+    "eslint-config-prettier"
+  ],
+  "plugins": ["jsx-a11y", "prettier"],
+  "rules": {
+    "react/jsx-filename-extension": [1, {"extensions": [".js", ".jsx"]}]
+  }
+}
