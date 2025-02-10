@@ -10,6 +10,7 @@ import {
   INVALID_REQUEST_STATUS,
 } from '../consts/httpStatus'
 
+// MSW Setup
 const server = setupServer(
   rest.post('/products', (req, res, ctx) => {
     const {name, size, type} = req.body
@@ -96,7 +97,7 @@ describe('when the user submits the form properly and the server returns created
   it('should the submit button be disabled until the request is done', async () => {
     const submitBtn = screen.getByRole('button', {name: /submit/i})
 
-    expect(submitBtn).not.toBeDisabled()
+    expect(submitBtn).not.toBeDisabled() // este matcher, al igual que toBeInTheDocument, vienen gracias a la extensión @testing-library/jest-dom
 
     fireEvent.click(submitBtn)
 

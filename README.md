@@ -23,3 +23,8 @@
 En este repositorio tienes acceso al código fuente del curso pero **¿Cuál fue el proceso para crear primero los tests y luego la implementación?** esta es la esencia de TDD.
 
 [DA CLICK AQUI PARA ACCEDER :D](https://www.udemy.com/course/tdd-react-js/?referralCode=F40803D2C4D2934AB038)
+
+Para los tests con jest, crearlos dentro de una carpeta **tests**
+'test' es un método global
+
+The "done" param, which is a function that causes jest to wait until the done callback is called before finishing the test.
