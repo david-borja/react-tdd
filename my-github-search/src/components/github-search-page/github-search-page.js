@@ -28,6 +28,18 @@ export const GithubSearchPage = () => {
             <th>Updated at</th>
           </tr>
         </thead>
+        <tbody>
+          <tr>
+            <td>
+              <img src="" alt="test" />
+              <a href="http://localhost:3000/test">Test</a>
+            </td>
+            <td>10</td>
+            <td>5</td>
+            <td>2</td>
+            <td>2020-01-01</td>
+          </tr>
+        </tbody>
       </table>
     ) : (
       <Box

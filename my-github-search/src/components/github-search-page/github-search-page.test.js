@@ -84,4 +84,26 @@ describe('when the developer does a search', () => {
     expect(openIssues).toHaveTextContent(/open issues/i)
     expect(updatedAt).toHaveTextContent(/updated at/i)
   })
+
+  it(`each table result must contain: owner avatar image, name, stars, updated at, forks, open issues, it should have a link that opens in a new tab`, async () => {
+    fireClickSearch()
+
+    const table = await screen.findByRole('table')
+    const tableCells = within(table).getAllByRole('cell')
+    expect(within(tableCells[0]).getByRole('img', {name: /test/i}))
+    expect(tableCells).toHaveLength(5)
+
+    const [repository, stars, forks, openIssues, updatedAt] = tableCells
+
+    expect(repository).toHaveTextContent(/test/i)
+    expect(stars).toHaveTextContent(/10/i)
+    expect(forks).toHaveTextContent(/5/i)
+    expect(openIssues).toHaveTextContent(/2/i)
+    expect(updatedAt).toHaveTextContent(/2020-01-01/i)
+
+    expect(within(table).getByText(/test/i).closest('a')).toHaveAttribute(
+      'href',
+      'http://localhost:3000/test',
+    )
+  })
 })
