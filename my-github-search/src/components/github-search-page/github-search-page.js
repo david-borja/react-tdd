@@ -4,7 +4,7 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid'
-import Box from '@material-ui/core/Box'
+import SearchResult from '../content'
 
 export const GithubSearchPage = () => {
   const [isSearching, setIsSearching] = useState(false)
@@ -15,44 +15,6 @@ export const GithubSearchPage = () => {
     setIsSearchApplied(true)
     setIsSearching(false)
   }
-
-  const SearchResult = () =>
-    isSearchApplied ? (
-      <table>
-        <thead>
-          <tr>
-            <th>Repository</th>
-            <th>Stars</th>
-            <th>Forks</th>
-            <th>Open issues</th>
-            <th>Updated at</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <img src="" alt="test" />
-              <a href="http://localhost:3000/test">Test</a>
-            </td>
-            <td>10</td>
-            <td>5</td>
-            <td>2</td>
-            <td>2020-01-01</td>
-          </tr>
-        </tbody>
-      </table>
-    ) : (
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        height={400}
-      >
-        <Typography component="h1" variant="h3">
-          Please provide a search option and click in the search button
-        </Typography>
-      </Box>
-    )
 
   return (
     <Container>
@@ -76,7 +38,7 @@ export const GithubSearchPage = () => {
           </Button>
         </Grid>
       </Grid>
-      <SearchResult />
+      <SearchResult isSearchApplied={isSearchApplied} />
     </Container>
   )
 }

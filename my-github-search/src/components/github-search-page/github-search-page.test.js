@@ -36,6 +36,7 @@ describe('when the GithubSearchPage is mounted', () => {
 describe('when the developer does a search', () => {
   const fireClickSearch = () =>
     fireEvent.click(screen.getByRole('button', {name: /search/i}))
+
   it('the search button should be disabled util the search is done', async () => {
     expect(screen.getByRole('button', {name: /search/i})).not.toBeDisabled()
 
@@ -90,11 +91,10 @@ describe('when the developer does a search', () => {
 
     const table = await screen.findByRole('table')
     const tableCells = within(table).getAllByRole('cell')
-    expect(within(tableCells[0]).getByRole('img', {name: /test/i}))
-    expect(tableCells).toHaveLength(5)
-
     const [repository, stars, forks, openIssues, updatedAt] = tableCells
 
+    expect(within(repository).getByRole('img', {name: /test/i}))
+    expect(tableCells).toHaveLength(5)
     expect(repository).toHaveTextContent(/test/i)
     expect(stars).toHaveTextContent(/10/i)
     expect(forks).toHaveTextContent(/5/i)
@@ -105,5 +105,29 @@ describe('when the developer does a search', () => {
       'href',
       'http://localhost:3000/test',
     )
+  })
+
+  it('must display the total results number of the search and the current number of results', async () => {
+    fireClickSearch()
+    await screen.findByRole('table')
+    expect(screen.getByText(/1-1 of 1/)).toBeInTheDocument()
+  })
+
+  it('results size per page select/combobox with the options: 30, 50, 100. The default is 30', async () => {
+    fireClickSearch()
+
+    await screen.findByRole('table')
+    expect(screen.getByLabelText(/rows per page/i)).toBeInTheDocument()
+    fireEvent.mouseDown(screen.getByLabelText(/rows per page/i))
+
+    const listbox = screen.getByRole('listbox', {name: /rows per page/i})
+
+    const options = within(listbox).getAllByRole('option')
+    expect(options).toHaveLength(3)
+
+    const [option30, option50, option100] = options
+    expect(option30).toHaveTextContent(/30/)
+    expect(option50).toHaveTextContent(/50/)
+    expect(option100).toHaveTextContent(/100/)
   })
 })
