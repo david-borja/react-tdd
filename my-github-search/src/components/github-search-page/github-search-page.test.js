@@ -6,9 +6,47 @@ import {
   waitFor,
   within,
 } from '@testing-library/react'
+import {rest} from 'msw'
+import {setupServer} from 'msw/node'
 import {GithubSearchPage} from './github-search-page'
 
+const fakeRepo = {
+  id: '56757919',
+  name: 'django-rest-framework-reactive',
+  owner: {
+    avatar_url: 'test',
+  },
+  html_url: 'test',
+  updated_at: 'test',
+  stargazers_count: 58,
+  forks_count: 9,
+  open_issues_count: 0,
+}
+
+const server = setupServer(
+  rest.get('/search/repositories', (req, res, ctx) => {
+    return res(
+      ctx.status(200),
+      ctx.json({
+        total_count: 8643,
+        inclomplete_results: false,
+        items: [fakeRepo],
+      }),
+    )
+  }),
+)
+
+// Enable API mocking before tests.
+beforeAll(() => server.listen())
+
+// Reset any runtime request handlers we may add during the tests.
+afterEach(() => server.resetHandlers())
+
+// Disable API mocking after the tests are done.
+afterAll(() => server.close())
+
 beforeEach(() => render(<GithubSearchPage />))
+
 describe('when the GithubSearchPage is mounted', () => {
   it('must display the title', () => {
     expect(
@@ -130,4 +168,18 @@ describe('when the developer does a search', () => {
     expect(option50).toHaveTextContent(/50/)
     expect(option100).toHaveTextContent(/100/)
   })
+
+  it('must exist the next and previous pagination', async () => {
+    fireClickSearch()
+    await screen.findByRole('table')
+    const previousPageBtn = screen.getByRole('button', {name: /previous page/i})
+    expect(previousPageBtn).toBeInTheDocument()
+    expect(screen.getByRole('button', {name: /next page/i})).toBeInTheDocument()
+
+    expect(previousPageBtn).toBeDisabled()
+  })
+})
+
+describe('when the developer does a search without results', () => {
+  it('must show an empty state message', () => {})
 })
