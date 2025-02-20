@@ -12,55 +12,81 @@ const tableHeaders = [
   'Updated at',
 ]
 
-const SearchResult = ({isSearchApplied}) =>
-  isSearchApplied ? (
-    <>
-      <table>
-        <thead>
-          <tr>
-            {tableHeaders.map(header => (
-              <th key={header}>{header}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>
-              <img src="" alt="test" />
-              <a href="http://localhost:3000/test">Test</a>
-            </td>
-            <td>10</td>
-            <td>5</td>
-            <td>2</td>
-            <td>2020-01-01</td>
-          </tr>
-        </tbody>
-      </table>
-      <TablePagination
-        rowsPerPageOptions={[30, 50, 100]}
-        component="div"
-        count={1}
-        rowsPerPage={30}
-        page={0}
-        onPageChange={() => {}}
-        onRowsPerPageChange={() => {}}
-      />
-    </>
-  ) : (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      height={400}
-    >
-      <Typography component="h1" variant="h3">
-        Please provide a search option and click in the search button
-      </Typography>
-    </Box>
+const SearchResult = ({isSearchApplied, reposList}) => {
+  if (isSearchApplied && reposList?.length > 0) {
+    return (
+      <>
+        <table>
+          <thead>
+            <tr>
+              {tableHeaders.map(header => (
+                <th key={header}>{header}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {reposList.map(
+              ({
+                name,
+                stargazers_count: stargazersCount,
+                forks_count: forksCount,
+                open_issues_count: openIssuesCount,
+                updated_at: updatedAt,
+                html_url: htmlUrl,
+                owner: {avatar_url: avatarUrl},
+              }) => (
+                <tr key={htmlUrl}>
+                  <td>
+                    <img src={avatarUrl} alt={name} />
+                    <a href={htmlUrl}>{name}</a>
+                  </td>
+                  <td>{stargazersCount}</td>
+                  <td>{forksCount}</td>
+                  <td>{openIssuesCount}</td>
+                  <td>{updatedAt}</td>
+                </tr>
+              ),
+            )}
+          </tbody>
+        </table>
+        <TablePagination
+          rowsPerPageOptions={[30, 50, 100]}
+          component="div"
+          count={1}
+          rowsPerPage={30}
+          page={0}
+          onPageChange={() => {}}
+          onRowsPerPageChange={() => {}}
+        />
+      </>
+    )
+  }
+
+  if (isSearchApplied && !reposList?.length) {
+    return (
+      <Box
+        display="flex"
+        alignItems="center"
+        justifyContent="center"
+        height={400}
+      >
+        <Typography component="h1" variant="h3">
+          Your search has no results
+        </Typography>
+      </Box>
+    )
+  }
+
+  return (
+    <Typography component="h1" variant="h3">
+      Please provide a search option and click in the search button
+    </Typography>
   )
+}
 
 export default SearchResult
 
 SearchResult.propTypes = {
   isSearchApplied: PropTypes.bool.isRequired,
+  reposList: PropTypes.arrayOf(PropTypes.shape).isRequired,
 }

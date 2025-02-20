@@ -14,10 +14,10 @@ const fakeRepo = {
   id: '56757919',
   name: 'django-rest-framework-reactive',
   owner: {
-    avatar_url: 'test',
+    avatar_url: 'https://avatars0.githubusercontent.com/u/2120224?v=4',
   },
-  html_url: 'test',
-  updated_at: 'test',
+  html_url: 'https://github.com/genialis/django-rest-framework-reactive',
+  updated_at: '2020-10-24',
   stargazers_count: 58,
   forks_count: 9,
   open_issues_count: 0,
@@ -35,6 +35,9 @@ const server = setupServer(
     )
   }),
 )
+
+const fireClickSearch = () =>
+  fireEvent.click(screen.getByRole('button', {name: /search/i}))
 
 // Enable API mocking before tests.
 beforeAll(() => server.listen())
@@ -72,9 +75,6 @@ describe('when the GithubSearchPage is mounted', () => {
 })
 
 describe('when the developer does a search', () => {
-  const fireClickSearch = () =>
-    fireEvent.click(screen.getByRole('button', {name: /search/i}))
-
   it('the search button should be disabled util the search is done', async () => {
     expect(screen.getByRole('button', {name: /search/i})).not.toBeDisabled()
 
@@ -130,19 +130,21 @@ describe('when the developer does a search', () => {
     const table = await screen.findByRole('table')
     const tableCells = within(table).getAllByRole('cell')
     const [repository, stars, forks, openIssues, updatedAt] = tableCells
-
-    expect(within(repository).getByRole('img', {name: /test/i}))
+    const avatarImg = within(repository).getByRole('img', {name: fakeRepo.name})
+    expect(avatarImg).toBeInTheDocument()
     expect(tableCells).toHaveLength(5)
-    expect(repository).toHaveTextContent(/test/i)
-    expect(stars).toHaveTextContent(/10/i)
-    expect(forks).toHaveTextContent(/5/i)
-    expect(openIssues).toHaveTextContent(/2/i)
-    expect(updatedAt).toHaveTextContent(/2020-01-01/i)
+    expect(repository).toHaveTextContent(fakeRepo.name)
+    expect(stars).toHaveTextContent(fakeRepo.stargazers_count)
+    expect(forks).toHaveTextContent(fakeRepo.forks_count)
+    expect(openIssues).toHaveTextContent(fakeRepo.open_issues_count)
+    expect(updatedAt).toHaveTextContent(fakeRepo.updated_at)
 
-    expect(within(table).getByText(/test/i).closest('a')).toHaveAttribute(
+    expect(within(table).getByText(fakeRepo.name).closest('a')).toHaveAttribute(
       'href',
-      'http://localhost:3000/test',
+      fakeRepo.html_url,
     )
+
+    expect(avatarImg).toHaveAttribute('src', fakeRepo.owner.avatar_url)
   })
 
   it('must display the total results number of the search and the current number of results', async () => {
@@ -181,5 +183,31 @@ describe('when the developer does a search', () => {
 })
 
 describe('when the developer does a search without results', () => {
-  it('must show an empty state message', () => {})
+  it('must show an empty state message "Your search has no results"', async () => {
+    // set the mock server no items
+    server.use(
+      rest.get('/search/repositories', (req, res, ctx) =>
+        res(
+          ctx.status(200),
+          ctx.json({
+            total_count: 0,
+            inclomplete_results: false,
+            items: [],
+          }),
+        ),
+      ),
+    )
+
+    // click search
+    fireClickSearch()
+
+    // expect message no results
+    await waitFor(() =>
+      expect(
+        screen.getByText(/your search has no results/i),
+      ).toBeInTheDocument(),
+    )
+
+    expect(screen.queryByRole('table')).not.toBeInTheDocument()
+  })
 })
