@@ -13,6 +13,20 @@ const tableHeaders = [
 ]
 
 const SearchResult = ({isSearchApplied, reposList}) => {
+  const BoxContainer = ({children}) => (
+    <Box
+      display="flex"
+      alignItems="center"
+      justifyContent="center"
+      height={400}
+    >
+      {children}
+    </Box>
+  )
+
+  BoxContainer.propTypes = {
+    children: PropTypes.node.isRequired,
+  }
   if (isSearchApplied && reposList?.length > 0) {
     return (
       <>
@@ -64,23 +78,20 @@ const SearchResult = ({isSearchApplied, reposList}) => {
 
   if (isSearchApplied && !reposList?.length) {
     return (
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        height={400}
-      >
+      <BoxContainer>
         <Typography component="h1" variant="h3">
           Your search has no results
         </Typography>
-      </Box>
+      </BoxContainer>
     )
   }
 
   return (
-    <Typography component="h1" variant="h3">
-      Please provide a search option and click in the search button
-    </Typography>
+    <BoxContainer>
+      <Typography component="h1" variant="h3">
+        Please provide a search option and click in the search button
+      </Typography>
+    </BoxContainer>
   )
 }
 
