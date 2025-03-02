@@ -13,9 +13,10 @@ import {
   makeFakeResponse,
   makeFakeRepo,
   getReposListBy,
-  getReposPerPage,
 } from '../../__fixtures__/repos'
+
 import {OK_STATUS} from '../../consts'
+import {handlePaginatedSearch} from '../../__fixtures__/handlers'
 
 const fakeResponse = makeFakeResponse({totalCount: 1})
 
@@ -236,21 +237,7 @@ describe('when the developer types on filter by and does a search', () => {
 describe('when the developer does a search and selects 50 rows per page', () => {
   it('must fetch a new search and display 50 rows results on the table', async () => {
     // config mock server response
-    server.use(
-      rest.get('/search/repositories', (req, res, ctx) => {
-        const items = getReposPerPage({
-          perPage: Number(req.url.searchParams.get('per_page')),
-          currentPage: req.url.searchParams.get('page'),
-        })
-        return res(
-          ctx.status(OK_STATUS),
-          ctx.json({
-            ...makeFakeResponse(),
-            items,
-          }),
-        )
-      }),
-    )
+    server.use(rest.get('/search/repositories', handlePaginatedSearch))
 
     // click search
     fireClickSearch()
