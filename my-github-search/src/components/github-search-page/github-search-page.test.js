@@ -13,6 +13,7 @@ import {
   makeFakeResponse,
   makeFakeRepo,
   getReposListBy,
+  getReposPerPage,
 } from '../../__fixtures__/repos'
 import {OK_STATUS} from '../../consts'
 
@@ -229,5 +230,51 @@ describe('when the developer types on filter by and does a search', () => {
     const tableCells = within(table).getAllByRole('cell')
     const [repository] = tableCells
     expect(repository).toHaveTextContent(expectedRepo.name)
+  })
+})
+
+describe('when the developer does a search and selects 50 rows per page', () => {
+  it('must fetch a new search and display 50 rows results on the table', async () => {
+    // config mock server response
+    server.use(
+      rest.get('/search/repositories', (req, res, ctx) => {
+        const items = getReposPerPage({
+          perPage: Number(req.url.searchParams.get('per_page')),
+          currentPage: req.url.searchParams.get('page'),
+        })
+        return res(
+          ctx.status(OK_STATUS),
+          ctx.json({
+            ...makeFakeResponse(),
+            items,
+          }),
+        )
+      }),
+    )
+
+    // click search
+    fireClickSearch()
+
+    // expect 30 rows length
+    expect(await screen.findByRole('table')).toBeInTheDocument()
+    expect(await screen.findAllByRole('row')).toHaveLength(31) // 30 + header
+
+    // select 50 per page
+    fireEvent.mouseDown(screen.getByLabelText(/rows per page/i)) // parece que material UI espera mouseDown
+    fireEvent.click(screen.getByRole('option', {name: '50'}))
+    // Espera a que el botón realmente se deshabilite antes de verificar lo contrario
+    await waitFor(() =>
+      expect(screen.getByRole('button', {name: /search/i})).toBeDisabled(),
+    )
+
+    // expect 50 rows length
+    // Ahora espera a que el botón se habilite
+    await waitFor(() =>
+      expect(screen.getByRole('button', {name: /search/i})).not.toBeDisabled(),
+    )
+    // Espera a que las filas de la tabla se actualicen
+    expect(await screen.findAllByRole('row')).toHaveLength(51) // 50 + header
+
+    // importante usar get or find de manera apropiada. Si no -> tests inestables
   })
 })

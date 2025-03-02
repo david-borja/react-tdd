@@ -12,21 +12,24 @@ const tableHeaders = [
   'Updated at',
 ]
 
-const SearchResult = ({isSearchApplied, reposList}) => {
-  const BoxContainer = ({children}) => (
-    <Box
-      display="flex"
-      alignItems="center"
-      justifyContent="center"
-      height={400}
-    >
-      {children}
-    </Box>
-  )
+const BoxContainer = ({children}) => (
+  <Box display="flex" alignItems="center" justifyContent="center" height={400}>
+    {children}
+  </Box>
+)
 
-  BoxContainer.propTypes = {
-    children: PropTypes.node.isRequired,
-  }
+BoxContainer.propTypes = {
+  children: PropTypes.node.isRequired,
+}
+
+const SearchResult = ({
+  isSearchApplied,
+  reposList,
+  rowsPerPage,
+  setRowsPerPage,
+}) => {
+  const handleChangeRowsPerPage = ({target: {value}}) => setRowsPerPage(value)
+
   if (isSearchApplied && reposList?.length > 0) {
     return (
       <>
@@ -40,16 +43,20 @@ const SearchResult = ({isSearchApplied, reposList}) => {
           </thead>
           <tbody>
             {reposList.map(
-              ({
-                name,
-                stargazers_count: stargazersCount,
-                forks_count: forksCount,
-                open_issues_count: openIssuesCount,
-                updated_at: updatedAt,
-                html_url: htmlUrl,
-                owner: {avatar_url: avatarUrl},
-              }) => (
-                <tr key={htmlUrl}>
+              (
+                {
+                  name,
+                  stargazers_count: stargazersCount,
+                  forks_count: forksCount,
+                  open_issues_count: openIssuesCount,
+                  updated_at: updatedAt,
+                  html_url: htmlUrl,
+                  owner: {avatar_url: avatarUrl},
+                },
+                idx,
+              ) => (
+                // eslint-disable-next-line react/no-array-index-key
+                <tr key={`${idx}-${htmlUrl}`}>
                   <td>
                     <img src={avatarUrl} alt={name} />
                     <a href={htmlUrl}>{name}</a>
@@ -67,10 +74,10 @@ const SearchResult = ({isSearchApplied, reposList}) => {
           rowsPerPageOptions={[30, 50, 100]}
           component="div"
           count={1}
-          rowsPerPage={30}
+          rowsPerPage={rowsPerPage}
           page={0}
           onPageChange={() => {}}
-          onRowsPerPageChange={() => {}}
+          onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </>
     )
@@ -100,4 +107,6 @@ export default SearchResult
 SearchResult.propTypes = {
   isSearchApplied: PropTypes.bool.isRequired,
   reposList: PropTypes.arrayOf(PropTypes.shape).isRequired,
+  rowsPerPage: PropTypes.number.isRequired,
+  setRowsPerPage: PropTypes.func.isRequired,
 }
