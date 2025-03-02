@@ -4,15 +4,19 @@ import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Container from '@material-ui/core/Container'
 import Grid from '@material-ui/core/Grid'
+import {TablePagination} from '@material-ui/core'
 import SearchResult from '../content'
 import {getRepos} from '../../services'
+import GithubTable from '../github-table'
+
+const DEFAULT_ROWS_PER_PAGE = 30
 
 export const GithubSearchPage = () => {
   const [isSearching, setIsSearching] = useState(false)
   const [isSearchApplied, setIsSearchApplied] = useState(false)
   const [reposList, setReposList] = useState([])
   const [searchBy, setSearchBy] = useState('')
-  const [rowsPerPage, setRowsPerPage] = useState(30)
+  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE)
 
   const isFirstRender = useRef(true) // esta referencia NO provocará re-renders cada vez que cambie
 
@@ -26,6 +30,7 @@ export const GithubSearchPage = () => {
   }, [rowsPerPage, searchBy])
 
   const handleChange = ({target: {value}}) => setSearchBy(value)
+  const handleChangeRowsPerPage = ({target: {value}}) => setRowsPerPage(value)
 
   useEffect(() => {
     // trigger search
@@ -64,12 +69,18 @@ export const GithubSearchPage = () => {
           </Button>
         </Grid>
       </Grid>
-      <SearchResult
-        rowsPerPage={rowsPerPage}
-        setRowsPerPage={setRowsPerPage}
-        isSearchApplied={isSearchApplied}
-        reposList={reposList}
-      />
+      <SearchResult isSearchApplied={isSearchApplied} reposList={reposList}>
+        <GithubTable reposList={reposList} />
+        <TablePagination
+          rowsPerPageOptions={[30, 50, 100]}
+          component="div"
+          count={1}
+          rowsPerPage={rowsPerPage}
+          page={0}
+          onPageChange={() => {}}
+          onRowsPerPageChange={handleChangeRowsPerPage}
+        />
+      </SearchResult>
     </Container>
   )
 }
