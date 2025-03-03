@@ -10,27 +10,39 @@ import {getRepos} from '../../services'
 import GithubTable from '../github-table'
 
 const DEFAULT_ROWS_PER_PAGE = 30
+const INITIAL_CURRENT_PAGE = 0
+const INITIAL_TOTAL_COUNT = 0
 
 export const GithubSearchPage = () => {
   const [isSearching, setIsSearching] = useState(false)
   const [isSearchApplied, setIsSearchApplied] = useState(false)
   const [reposList, setReposList] = useState([])
-  const [searchBy, setSearchBy] = useState('')
   const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_ROWS_PER_PAGE)
+  const [currentPage, setCurrentPage] = useState(INITIAL_CURRENT_PAGE)
+  const [totalCount, setTotalCount] = useState(INITIAL_TOTAL_COUNT)
 
   const isFirstRender = useRef(true) // esta referencia NO provocará re-renders cada vez que cambie
+  const searchByInput = useRef(null)
 
   const handleSearch = useCallback(async () => {
     setIsSearching(true)
-    const response = await getRepos({q: searchBy, rowsPerPage})
+    const response = await getRepos({
+      q: searchByInput.current.value,
+      rowsPerPage,
+      currentPage,
+    })
     const data = await response.json()
     setReposList(data.items)
+    setTotalCount(data.total_count)
     setIsSearchApplied(true)
     setIsSearching(false)
-  }, [rowsPerPage, searchBy])
+  }, [rowsPerPage, currentPage])
 
-  const handleChange = ({target: {value}}) => setSearchBy(value)
   const handleChangeRowsPerPage = ({target: {value}}) => setRowsPerPage(value)
+
+  const handlePageChange = (event, newPage) => {
+    setCurrentPage(newPage)
+  }
 
   useEffect(() => {
     // trigger search
@@ -50,8 +62,7 @@ export const GithubSearchPage = () => {
       <Grid container spacing={2} justifyContent="space-between">
         <Grid item md={6} xs={12}>
           <TextField
-            onChange={handleChange}
-            value={searchBy}
+            inputRef={searchByInput} // si no usáramos MUI, sería 'ref'
             fullWidth
             label="Filter by"
             id="filterBy"
@@ -74,10 +85,10 @@ export const GithubSearchPage = () => {
         <TablePagination
           rowsPerPageOptions={[30, 50, 100]}
           component="div"
-          count={1}
+          count={totalCount}
           rowsPerPage={rowsPerPage}
-          page={0}
-          onPageChange={() => {}}
+          page={currentPage}
+          onPageChange={handlePageChange}
           onRowsPerPageChange={handleChangeRowsPerPage}
         />
       </SearchResult>

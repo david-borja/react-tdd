@@ -9,7 +9,7 @@ export const handlePaginatedSearch = (req, res, ctx) => {
   return res(
     ctx.status(OK_STATUS),
     ctx.json({
-      ...makeFakeResponse(),
+      ...makeFakeResponse({totalCount: 1000}),
       items,
     }),
   )
