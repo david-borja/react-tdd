@@ -300,5 +300,15 @@ describe('when the developer clicks on seach and then on next page button', () =
       expect(screen.getByRole('button', {name: /search/i})).not.toBeDisabled(),
     )
     expect(screen.getByRole('cell', {name: /2-0/})).toBeInTheDocument()
+
+    // click previous page
+    fireEvent.click(screen.getByRole('button', {name: /previous page/i}))
+
+    // wait search finished
+    await waitFor(() =>
+      expect(screen.getByRole('button', {name: /search/i})).not.toBeDisabled(),
+    )
+    // expect
+    expect(screen.getByRole('cell', {name: /1-0/})).toBeInTheDocument()
   }, 10000)
 })
