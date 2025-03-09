@@ -195,3 +195,7 @@ describe('when the developer does a search and clicks on next page button and cl
     expect(screen.getByRole('cell', {name: /1-0/})).toBeInTheDocument()
   }, 20000)
 })
+
+/* 
+Para las llamadas a una api, te recomiendo mockear el server como lo hicimos en esta sección, sin embargo, tienes la opción de mockear la llamada usando jest.mock en "fetch" o en lo que sea que utilices para llamar a una api. Pero ten en cuenta que tu test NO va a tener coverage de esa llamada a la api, por lo que vas a tener que crear un test independiente para revisar exclusivamente esa funcionalidad.
+*/
