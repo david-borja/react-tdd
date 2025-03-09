@@ -16,7 +16,7 @@ import {
   makeFakeError,
 } from '../../__fixtures__/repos'
 
-import {OK_STATUS} from '../../consts'
+import {OK_STATUS, UNEXPECTED_STATUS, UNPROCESSABLE_STATUS} from '../../consts'
 import {handlePaginatedSearch} from '../../__fixtures__/handlers'
 
 const fakeResponse = makeFakeResponse({totalCount: 1})
@@ -270,7 +270,7 @@ describe('when the developer does a search and selects 50 rows per page', () => 
     expect(await screen.findAllByRole('row')).toHaveLength(51) // 50 + header
 
     // importante usar get or find de manera apropiada. Si no -> tests inestables
-  })
+  }, 10000)
 })
 
 describe('when the developer clicks on seach and then on next page button and then on previous page button', () => {
@@ -314,12 +314,14 @@ describe('when the developer clicks on seach and then on next page button and th
   }, 20000)
 })
 
-describe('when there is an unexpected error from the backend', () => {
+describe('when there is an Unprocessable Entity from the backend', () => {
   it('must display an alert message error with the message from the service', async () => {
+    expect(screen.queryByText(/validation failed/i)).not.toBeInTheDocument() // si aquí usáramos toBeVisible, nos daría un error el matcher
+
     // config server so it returns error
     server.use(
       rest.get('/search/repositories', (req, res, ctx) =>
-        res(ctx.status(422), ctx.json(makeFakeError())),
+        res(ctx.status(UNPROCESSABLE_STATUS), ctx.json(makeFakeError())),
       ),
     )
 
@@ -328,5 +330,27 @@ describe('when there is an unexpected error from the backend', () => {
 
     // expect message
     expect(await screen.findByText(/validation failed/i)).toBeVisible()
+  })
+})
+
+describe('when there is an unexpected error from the backend', () => {
+  it('must display an alert message error with the message from the service', async () => {
+    expect(screen.queryByText(/unexpected error/i)).not.toBeInTheDocument() // si aquí usáramos toBeVisible, nos daría un error el matcher
+
+    // config server so it returns error
+    server.use(
+      rest.get('/search/repositories', (req, res, ctx) =>
+        res(
+          ctx.status(UNEXPECTED_STATUS),
+          ctx.json(makeFakeError({message: 'Unexpected error'})),
+        ),
+      ),
+    )
+
+    // click search
+    fireClickSearch()
+
+    // expect message
+    expect(await screen.findByText(/unexpected error/i)).toBeVisible()
   })
 })

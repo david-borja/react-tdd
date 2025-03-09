@@ -22,6 +22,7 @@ export const GithubSearchPage = () => {
   const [currentPage, setCurrentPage] = useState(INITIAL_CURRENT_PAGE)
   const [totalCount, setTotalCount] = useState(INITIAL_TOTAL_COUNT)
   const [isOpen, setIsOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const isFirstRender = useRef(true) // esta referencia NO provocará re-renders cada vez que cambie
   const searchByInput = useRef(null)
@@ -44,8 +45,10 @@ export const GithubSearchPage = () => {
       setTotalCount(data.total_count)
       setIsSearchApplied(true)
       setIsSearching(false)
-    } catch (error) {
+    } catch (err) {
+      const error = await err.json() // esto se me hace raro volver a hacerlo dentro del catch para obtener el mensaje de error
       setIsOpen(true)
+      setErrorMessage(error.message)
     } finally {
       setIsSearching(false)
     }
@@ -112,7 +115,7 @@ export const GithubSearchPage = () => {
         open={isOpen}
         autoHideDuration={6000}
         onClose={handleClose}
-        message="Validation Failed"
+        message={errorMessage}
       />
     </Container>
   )
