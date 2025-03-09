@@ -65,6 +65,15 @@ export const GithubSearchPage = () => {
 
   const handleClose = () => setIsOpen(false)
 
+  const handleClickSearch = () => {
+    if (currentPage === INITIAL_CURRENT_PAGE) {
+      handleSearch()
+      return
+    }
+
+    setCurrentPage(INITIAL_CURRENT_PAGE)
+  }
+
   useEffect(() => {
     // trigger search
     if (isFirstRender.current) {
@@ -95,7 +104,7 @@ export const GithubSearchPage = () => {
             color="primary"
             variant="contained"
             disabled={isSearching}
-            onClick={handleSearch}
+            onClick={handleClickSearch}
           >
             Search
           </Button>
