@@ -106,3 +106,51 @@ describe('when the developer clicks on seach and then on next page button and th
     expect(screen.getByRole('cell', {name: /1-0/})).toBeInTheDocument()
   }, 20000)
 })
+
+describe('when the developer does a search and clicks on next page button and selects 50 rows per page', () => {
+  it('must display the results of the first page', async () => {
+    // config server handler
+    server.use(rest.get('/search/repositories', handlePaginatedSearch))
+
+    // click search
+    fireClickSearch()
+
+    // wait table
+    expect(await screen.findByRole('table')).toBeInTheDocument()
+
+    // expect first repo name is from page 0
+    expect(screen.getByRole('cell', {name: /1-0/})).toBeInTheDocument()
+
+    // expect next page is not disabled
+    expect(screen.getByRole('button', {name: /next page/i})).not.toBeDisabled()
+
+    // click next page button
+    fireEvent.click(screen.getByRole('button', {name: /next page/i}))
+
+    // expect search button to be disabled
+    expect(screen.getByRole('button', {name: /search/i})).toBeDisabled()
+
+    // expect first repo name is from page 1
+    await waitFor(() =>
+      expect(screen.getByRole('button', {name: /search/i})).not.toBeDisabled(),
+    )
+    expect(screen.getByRole('cell', {name: /2-0/})).toBeInTheDocument()
+
+    // select 50 per page
+    fireEvent.mouseDown(screen.getByLabelText(/rows per page/i)) // parece que material UI espera mouseDown
+    fireEvent.click(screen.getByRole('option', {name: '50'}))
+    // Espera a que el botón realmente se deshabilite antes de verificar lo contrario
+    await waitFor(() =>
+      expect(screen.getByRole('button', {name: /search/i})).toBeDisabled(),
+    )
+
+    // expect 50 rows length
+    // Ahora espera a que el botón se habilite
+    await waitFor(() =>
+      expect(screen.getByRole('button', {name: /search/i})).not.toBeDisabled(),
+    )
+
+    // expect first page
+    expect(screen.getByRole('cell', {name: /1-0/})).toBeInTheDocument()
+  }, 20000)
+})
