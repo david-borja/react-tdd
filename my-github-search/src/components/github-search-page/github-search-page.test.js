@@ -13,6 +13,7 @@ import {
   makeFakeResponse,
   makeFakeRepo,
   getReposListBy,
+  makeFakeError,
 } from '../../__fixtures__/repos'
 
 import {OK_STATUS} from '../../consts'
@@ -272,8 +273,8 @@ describe('when the developer does a search and selects 50 rows per page', () => 
   })
 })
 
-describe('when the developer clicks on seach and then on next page button', () => {
-  it('must display the next repositories page', async () => {
+describe('when the developer clicks on seach and then on next page button and then on previous page button', () => {
+  it('must display the next repositories page and the previous repositories page', async () => {
     // config server handler
     server.use(rest.get('/search/repositories', handlePaginatedSearch))
 
@@ -310,5 +311,22 @@ describe('when the developer clicks on seach and then on next page button', () =
     )
     // expect
     expect(screen.getByRole('cell', {name: /1-0/})).toBeInTheDocument()
-  }, 10000)
+  }, 20000)
+})
+
+describe('when there is an unexpected error from the backend', () => {
+  it('must display an alert message error with the message from the service', async () => {
+    // config server so it returns error
+    server.use(
+      rest.get('/search/repositories', (req, res, ctx) =>
+        res(ctx.status(422), ctx.json(makeFakeError())),
+      ),
+    )
+
+    // click search
+    fireClickSearch()
+
+    // expect message
+    expect(await screen.findByText(/validation failed/i)).toBeVisible()
+  })
 })

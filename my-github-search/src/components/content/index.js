@@ -14,11 +14,11 @@ BoxContainer.propTypes = {
 }
 
 const SearchResult = ({isSearchApplied, reposList, children}) => {
-  if (isSearchApplied && reposList?.length > 0) {
+  if (isSearchApplied && reposList.length > 0) {
     return children
   }
 
-  if (isSearchApplied && !reposList?.length) {
+  if (isSearchApplied && !reposList.length) {
     return (
       <BoxContainer>
         <Typography component="h1" variant="h3">

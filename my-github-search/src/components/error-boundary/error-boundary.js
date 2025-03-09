@@ -1,7 +1,11 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-// export const ErrorBoundary = ({children}) => children
+// https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary
+
+// There is currently no way to write an error boundary as a function component. However, you don’t have to write the error boundary class yourself. For example, you can use react-error-boundary instead.
+
+// https://github.com/bvaughn/react-error-boundary
 
 export class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -13,7 +17,9 @@ export class ErrorBoundary extends React.Component {
     return {hasError: true}
   }
 
-  handleReloadClick = () => window.location.reload()
+  handleReloadClick = () => {
+    window.location.reload()
+  }
 
   render() {
     const {children} = this.props
