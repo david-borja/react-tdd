@@ -11,8 +11,8 @@ export const LoginPage = () => {
     const formElement = event.currentTarget
 
     const formElements = formElement.elements as typeof formElement.elements & {
-      email: {value: sttring}
-      password: {value: sttring}
+      email: {value: string}
+      password: {value: string}
     }
     const {email, password} = formElements
 
