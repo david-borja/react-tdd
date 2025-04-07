@@ -14,6 +14,7 @@
   "rules": {
     "react/react-in-jsx-scope": "off",
     "react/jsx-filename-extension": "off",
+    "react/jsx-no-spreading": "off",
     "filenames-simple/naming-convention": [
       "error",
       {"rule": "kebab-case", "excepts": ["setupTests", "reportWebVitals"]}
