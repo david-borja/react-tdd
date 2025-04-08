@@ -1,6 +1,8 @@
 import {TextField} from '@mui/material'
 import React from 'react'
 import {useForm, SubmitHandler} from 'react-hook-form'
+import {yupResolver} from '@hookform/resolvers/yup'
+import {loginSchema} from './login-schema'
 
 interface Inputs {
   email: string
@@ -12,7 +14,9 @@ export const LoginPage = () => {
     register,
     handleSubmit,
     formState: {errors},
-  } = useForm<Inputs>()
+  } = useForm<Inputs>({
+    resolver: yupResolver(loginSchema),
+  })
 
   const onSubmit: SubmitHandler<Inputs> = data => console.log(data)
   return (
@@ -24,7 +28,7 @@ export const LoginPage = () => {
         <TextField
           type="email"
           id="email"
-          helperText={errors.email && 'The email is required'}
+          helperText={errors.email?.message}
           {...register('email', {required: true})} // register already returns props like "name"
         />
 
@@ -33,7 +37,7 @@ export const LoginPage = () => {
           type="password"
           id="password"
           name="password"
-          helperText={errors.password && 'The password is required'}
+          helperText={errors.password?.message}
           {...register('password', {required: true})} // register already returns props like "name"
         />
 
