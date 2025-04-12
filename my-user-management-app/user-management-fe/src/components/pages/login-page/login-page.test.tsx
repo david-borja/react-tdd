@@ -1,4 +1,4 @@
-import {screen, render} from '@testing-library/react'
+import {screen, render, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 
 import {LoginPage} from './login-page'
@@ -42,4 +42,17 @@ test('it should validate the email format', async () => {
 
   // expect validation errors
   expect(await screen.findByText(/the email is not valid/i)).toBeInTheDocument()
+})
+
+test('it should disabled the submit button while is fetching', async () => {
+  render(<LoginPage />)
+
+  expect(getSubmitBtn()).not.toBeDisabled()
+
+  userEvent.type(screen.getByLabelText(/email/i), 'john.doe@mail.com')
+  userEvent.type(screen.getByLabelText(/password/i), '123456')
+
+  userEvent.click(getSubmitBtn())
+
+  await waitFor(() => expect(getSubmitBtn()).toBeDisabled())
 })

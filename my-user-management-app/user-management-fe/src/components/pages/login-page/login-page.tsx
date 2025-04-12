@@ -1,3 +1,4 @@
+import axios from 'axios'
 import {TextField} from '@mui/material'
 import React from 'react'
 import {useForm, SubmitHandler} from 'react-hook-form'
@@ -9,7 +10,15 @@ interface Inputs {
   password: string
 }
 
+const loginService = async (email: string, password: string) => {
+  await axios.post('/login', {
+    email,
+    password,
+  })
+}
+
 export const LoginPage = () => {
+  const [isLoading, setIsLoading] = React.useState<boolean>(false)
   const {
     register,
     handleSubmit,
@@ -18,7 +27,11 @@ export const LoginPage = () => {
     resolver: yupResolver(loginSchema),
   })
 
-  const onSubmit: SubmitHandler<Inputs> = data => console.log(data)
+  const onSubmit: SubmitHandler<Inputs> = async ({email, password}) => {
+    setIsLoading(true)
+    await loginService(email, password)
+  }
+
   return (
     <>
       <h1>Login</h1>
@@ -41,7 +54,9 @@ export const LoginPage = () => {
           {...register('password', {required: true})} // register already returns props like "name"
         />
 
-        <button type="submit">Submit</button>
+        <button disabled={isLoading} type="submit">
+          Submit
+        </button>
       </form>
     </>
   )
