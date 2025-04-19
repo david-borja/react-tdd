@@ -1,6 +1,7 @@
 import {TextField} from '@mui/material'
 import {useForm, SubmitHandler} from 'react-hook-form'
 import {yupResolver} from '@hookform/resolvers/yup'
+import {StyledLoader} from 'components/loader'
 import {loginSchema} from './login-schema'
 import {useLoginMutation} from './use-login-mutation'
 import {Inputs} from './login-page.interfaces'
@@ -25,7 +26,9 @@ export const LoginPage = () => {
   return (
     <>
       <h1>Login</h1>
-
+      {mutation.isLoading && (
+        <StyledLoader role="progressbar" aria-label="loading" />
+      )}
       <form onSubmit={handleSubmit(onSubmit)}>
         <label htmlFor="email">Email</label>
         <TextField
