@@ -1,24 +1,15 @@
-import axios from 'axios'
 import {TextField} from '@mui/material'
-import React from 'react'
 import {useForm, SubmitHandler} from 'react-hook-form'
 import {yupResolver} from '@hookform/resolvers/yup'
 import {loginSchema} from './login-schema'
+import {useLoginMutation} from './use-login-mutation'
+import {Inputs} from './login-page.interfaces'
 
-interface Inputs {
-  email: string
-  password: string
-}
-
-const loginService = async (email: string, password: string) => {
-  await axios.post('/login', {
-    email,
-    password,
-  })
-}
+// Unlike queries, mutations are typically userd to create/update/delete data or perform server side-effect
 
 export const LoginPage = () => {
-  const [isLoading, setIsLoading] = React.useState<boolean>(false)
+  const mutation = useLoginMutation()
+
   const {
     register,
     handleSubmit,
@@ -28,8 +19,7 @@ export const LoginPage = () => {
   })
 
   const onSubmit: SubmitHandler<Inputs> = async ({email, password}) => {
-    setIsLoading(true)
-    await loginService(email, password)
+    mutation.mutate({email, password})
   }
 
   return (
@@ -54,7 +44,7 @@ export const LoginPage = () => {
           {...register('password', {required: true})} // register already returns props like "name"
         />
 
-        <button disabled={isLoading} type="submit">
+        <button disabled={mutation.isLoading} type="submit">
           Submit
         </button>
       </form>
