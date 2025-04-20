@@ -29,6 +29,8 @@ export const LoginPage = () => {
       {mutation.isLoading && (
         <StyledLoader role="progressbar" aria-label="loading" />
       )}
+
+      {mutation.error && <h1>Unexpected error, please try again</h1>}
       <form onSubmit={handleSubmit(onSubmit)}>
         <label htmlFor="email">Email</label>
         <TextField
