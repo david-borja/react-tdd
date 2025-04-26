@@ -1,13 +1,10 @@
 import {render} from '@testing-library/react'
-import {LoginPage} from 'pages/login-page/login-page'
 import {QueryClient, QueryClientProvider} from 'react-query'
 
 export const queryClient = new QueryClient()
 
 export const renderWithProviders = (ui: React.ReactNode) =>
   render(
-    <QueryClientProvider client={queryClient}>
-      <LoginPage />
-    </QueryClientProvider>,
+    <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>,
     {},
   )

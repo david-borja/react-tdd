@@ -35,8 +35,11 @@ export const LoginPage = () => {
       {
         onError: error => {
           if (!axios.isAxiosError(error)) return
+          const status: number = error?.response?.status ?? 0
           const message =
-            ERROR_MESSAGE_MATCHER[error?.response?.status] || DEFAULT_ERROR
+            ERROR_MESSAGE_MATCHER[
+              status as keyof typeof ERROR_MESSAGE_MATCHER
+            ] || DEFAULT_ERROR
           setErrorMessage(message)
         },
       },
@@ -50,14 +53,6 @@ export const LoginPage = () => {
       {mutation.isLoading && (
         <StyledLoader role="progressbar" aria-label="loading" />
       )}
-
-      {/* {mutation.isError &&
-        (axios.isAxiosError(mutation.error) &&
-        mutation?.error?.response?.status === 500 ? (
-          <h1>Unexpected error, please try again</h1>
-        ) : (
-          <h1>The email or password are not correct</h1>
-        ))} */}
 
       {mutation.isError && <Typography>{errorMessage}</Typography>}
 
@@ -74,7 +69,6 @@ export const LoginPage = () => {
         <TextField
           type="password"
           id="password"
-          name="password"
           helperText={errors.password?.message}
           {...register('password', {required: true})} // register already returns props like "name"
         />

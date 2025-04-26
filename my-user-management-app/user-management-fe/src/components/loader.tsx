@@ -60,3 +60,5 @@ export const StyledLoader = styled('div')(() => ({
     animationPlayState: 'initial',
   },
 }))
+
+export default StyledLoader
