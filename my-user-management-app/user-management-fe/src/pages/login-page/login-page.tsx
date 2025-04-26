@@ -1,4 +1,6 @@
-import {TextField} from '@mui/material'
+import React from 'react'
+import axios from 'axios'
+import {TextField, Typography} from '@mui/material'
 import {useForm, SubmitHandler} from 'react-hook-form'
 import {yupResolver} from '@hookform/resolvers/yup'
 import {StyledLoader} from 'components/loader'
@@ -8,7 +10,15 @@ import {Inputs} from './login-page.interfaces'
 
 // Unlike queries, mutations are typically userd to create/update/delete data or perform server side-effect
 
+const ERROR_MESSAGE_MATCHER = {
+  401: 'The email or password are not correct',
+  500: 'Unexpected error, please try again',
+}
+
+const DEFAULT_ERROR = 'Default Error'
+
 export const LoginPage = () => {
+  const [errorMessage, setErrorMessage] = React.useState<string>('')
   const mutation = useLoginMutation()
 
   const {
@@ -20,17 +30,37 @@ export const LoginPage = () => {
   })
 
   const onSubmit: SubmitHandler<Inputs> = async ({email, password}) => {
-    mutation.mutate({email, password})
+    mutation.mutate(
+      {email, password},
+      {
+        onError: error => {
+          if (!axios.isAxiosError(error)) return
+          const message =
+            ERROR_MESSAGE_MATCHER[error?.response?.status] || DEFAULT_ERROR
+          setErrorMessage(message)
+        },
+      },
+    )
   }
 
   return (
     <>
       <h1>Login</h1>
+
       {mutation.isLoading && (
         <StyledLoader role="progressbar" aria-label="loading" />
       )}
 
-      {mutation.error && <h1>Unexpected error, please try again</h1>}
+      {/* {mutation.isError &&
+        (axios.isAxiosError(mutation.error) &&
+        mutation?.error?.response?.status === 500 ? (
+          <h1>Unexpected error, please try again</h1>
+        ) : (
+          <h1>The email or password are not correct</h1>
+        ))} */}
+
+      {mutation.isError && <Typography>{errorMessage}</Typography>}
+
       <form onSubmit={handleSubmit(onSubmit)}>
         <label htmlFor="email">Email</label>
         <TextField
@@ -56,3 +86,5 @@ export const LoginPage = () => {
     </>
   )
 }
+
+export default LoginPage

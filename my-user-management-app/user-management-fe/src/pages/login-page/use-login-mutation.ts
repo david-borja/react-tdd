@@ -2,12 +2,11 @@ import axios from 'axios'
 import {useMutation} from 'react-query'
 import {Inputs} from './login-page.interfaces'
 
-const loginService = async (email: string, password: string) => {
-  await axios.post('/login', {
+const loginService = async (email: string, password: string): Promise<void> =>
+  axios.post('/login', {
     email,
     password,
   })
-}
 
 export const useLoginMutation = () => {
   return useMutation((payload: Inputs) =>

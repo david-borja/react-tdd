@@ -20,6 +20,7 @@
       {"rule": "kebab-case", "excepts": ["setupTests", "reportWebVitals"]}
     ],
     "eslint-plugin-import/prefer-default-export": "off",
+    "react/function-component-definition": "off",
     "import/extensions": [
       "error",
       "ignorePackages",
