@@ -9,3 +9,5 @@ export const loginSchema = yup
     password: yup.string().required('The password is required'),
   })
   .required()
+
+export default loginSchema

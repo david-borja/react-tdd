@@ -1,16 +1,17 @@
 import {screen, waitFor} from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {rest} from 'msw'
+import {server} from 'mocks/server'
 
 import {renderWithProviders} from 'mocks/render-with-providers'
+import {baseUrl} from '../../config'
 import {LoginPage} from './login-page'
-import {server} from 'mocks/server'
 
 const getSubmitBtn = () => screen.getByRole('button', {name: /submit/i})
 
 const mockServerWithError = (statusCode: number) =>
   server.use(
-    rest.post('/login', (req, res, ctx) =>
+    rest.post(`${baseUrl}/login`, (req, res, ctx) =>
       res(ctx.delay(1), ctx.status(statusCode)),
     ),
   )
