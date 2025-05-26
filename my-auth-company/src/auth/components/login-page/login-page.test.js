@@ -42,7 +42,20 @@ describe('when the user fills the fields and clicks the submit button', () => {
 })
 
 describe('when the user fills and blur the email input with invalid email, and then focus and change with valid value', () => {
-  it('must not display a validation message', () => {})
+  it('must not display a validation message', () => {
+    const emailInput = screen.getByLabelText(/email/i)
+
+    // change and blur email input
+    fireEvent.change(emailInput, {
+      target: {value: 'invalid.email'},
+    })
+    fireEvent.blur(emailInput)
+
+    // expect
+    expect(
+      screen.getByText(/the email is invalid. Example: john.doe@mail.com/i),
+    ).toBeInTheDocument()
+  })
 })
 
 describe('when the user fills and blur the password input with a value with 7 character length', () => {
