@@ -41,8 +41,8 @@ describe('when the user fills the fields and clicks the submit button', () => {
   })
 })
 
-describe('when the user fills and blur the email input with invalid email, and then focus and change with valid value', () => {
-  it('must not display a validation message', () => {
+describe('when the user fills and blur the email input with invalid email', () => {
+  it('must display a validation message "The email is invalid. Example: john.doe@mail.com"', () => {
     const emailInput = screen.getByLabelText(/email/i)
 
     // change and blur email input
