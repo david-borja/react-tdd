@@ -41,8 +41,8 @@ describe('when the user fills the fields and clicks the submit button', () => {
   })
 })
 
-describe('when the user fills and blur the email input with invalid email', () => {
-  it('must display a validation message "The email is invalid. Example: john.doe@mail.com"', () => {
+describe('when the user fills and blur the email input with invalid email, and then focus and change with valid value', () => {
+  it('must not display a validation message', () => {
     const emailInput = screen.getByLabelText(/email/i)
 
     // change and blur email input
@@ -51,10 +51,18 @@ describe('when the user fills and blur the email input with invalid email', () =
     })
     fireEvent.blur(emailInput)
 
-    // expect
     expect(
       screen.getByText(/the email is invalid. Example: john.doe@mail.com/i),
     ).toBeInTheDocument()
+
+    fireEvent.change(emailInput, {
+      target: {value: 'john.doe@email.com'},
+    })
+    fireEvent.blur(emailInput)
+
+    expect(
+      screen.queryByText(/the email is invalid. Example: john.doe@mail.com/i),
+    ).not.toBeInTheDocument()
   })
 })
 
