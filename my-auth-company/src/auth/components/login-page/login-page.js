@@ -2,10 +2,19 @@ import React, {useState} from 'react'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 
+const passwordValidationsMsg =
+  'The password must contain at least 8 characters, one upper case letter, one number and one special character'
+
 const validateEmail = email => {
   const regex = /^([A-Za-z0-9_\-.])+@([A-Za-z0-9_\-.])+\.([A-Za-z]{2,4})$/
 
   return regex.test(email)
+}
+
+const validatePassword = password => {
+  const passwordRulesRegex = /^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})/
+
+  return passwordRulesRegex.test(password)
 }
 
 export const LoginPage = () => {
@@ -42,6 +51,15 @@ export const LoginPage = () => {
     setEmailValidationMessage('')
   }
 
+  const handleBlurPassword = () => {
+    if (!validatePassword(formValues.password)) {
+      setPasswordValidationMessage(passwordValidationsMsg)
+      return
+    }
+
+    setPasswordValidationMessage('')
+  }
+
   return (
     <>
       <h1>Login Page</h1>
@@ -59,6 +77,10 @@ export const LoginPage = () => {
           label="password"
           id="password"
           type="password"
+          name="password"
+          onChange={handleChange}
+          onBlur={handleBlurPassword}
+          value={formValues.password}
           helperText={passwordlValidationMessage}
         />
         <Button type="submit">Send</Button>

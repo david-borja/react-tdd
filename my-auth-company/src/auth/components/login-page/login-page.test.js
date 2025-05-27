@@ -3,6 +3,11 @@ import {screen, render, fireEvent} from '@testing-library/react'
 
 import {LoginPage} from './login-page'
 
+const passwordValidationMessage =
+  'The password must contain at least 8 characters, one upper case letter, one number and one special character'
+
+const getPasswordInput = () => screen.getByLabelText(/password/i)
+
 beforeEach(() => render(<LoginPage />))
 
 describe('when login page is mounted', () => {
@@ -68,22 +73,52 @@ describe('when the user fills and blur the email input with invalid email, and t
 
 describe('when the user fills and blur the password input with a value with 7 character length', () => {
   it(`must display the validation message "The password must contain at least 8 characters,
-  one upper case letter, one number and one special character"`, () => {})
+  one upper case letter, one number and one special character"`, () => {
+    // change and blur email input
+    fireEvent.change(getPasswordInput(), {
+      target: {value: 'asdfghj'},
+    })
+    fireEvent.blur(getPasswordInput())
+
+    expect(screen.getByText(passwordValidationMessage)).toBeInTheDocument()
+  })
 })
 
 describe('when the user fills and blur the password input with a value without one upper case character', () => {
   it(`must display the validation message "The password must contain at least 8 characters,
-  one upper case letter, one number and one special character"`, () => {})
+  one upper case letter, one number and one special character"`, () => {
+    // change and blur email input
+    fireEvent.change(getPasswordInput(), {
+      target: {value: 'asdfghj8'},
+    })
+    fireEvent.blur(getPasswordInput())
+
+    expect(screen.getByText(passwordValidationMessage)).toBeInTheDocument()
+  })
 })
 
-describe('when the user fills and blur the password input with a value without one number', () => {
-  it(`must display the validation message "The password must contain at least 8 characters,
-  one upper case letter, one number and one special character"`, () => {})
-})
-
-describe(`when the user fills and blur the password input with without one special character and
+describe(`when the user fills and blur the password input without one special character and
 then change with valid value and blur again`, () => {
-  it(`must not display the validation message`, () => {})
+  it(`must not display the validation message`, () => {
+    const validPassword = 'aA1asdasda#'
+    // change and blur email input
+    fireEvent.change(getPasswordInput(), {
+      target: {value: 'asdfghjA1a'},
+    })
+    fireEvent.blur(getPasswordInput())
+
+    expect(screen.getByText(passwordValidationMessage)).toBeInTheDocument()
+
+    // change and blur email input
+    fireEvent.change(getPasswordInput(), {
+      target: {value: validPassword},
+    })
+    fireEvent.blur(getPasswordInput())
+
+    expect(
+      screen.queryByText(passwordValidationMessage),
+    ).not.toBeInTheDocument()
+  })
 })
 
 describe('when the user submit the login form with valid data', () => {
