@@ -27,14 +27,20 @@ export const LoginPage = () => {
 
   const handleSubmit = async e => {
     e.preventDefault()
-    const {email, password} = e.target.elements
-    if (!email.value) {
+    const {email, password} = formValues
+
+    const isEmailEmpty = !email
+    const isPasswordEmpty = !password
+
+    if (isEmailEmpty) {
       setEmailValidationMessage('The email is required')
     }
 
-    if (!password.value) {
+    if (isPasswordEmpty) {
       setPasswordValidationMessage('The password is required')
     }
+
+    if (isEmailEmpty || isPasswordEmpty) return
 
     setIsFetching(true)
 
@@ -70,6 +76,7 @@ export const LoginPage = () => {
   return (
     <>
       <h1>Login Page</h1>
+      {isFetching && <p data-testid="loading-indicator">Loading</p>}
       <form onSubmit={handleSubmit}>
         <TextField
           label="email"

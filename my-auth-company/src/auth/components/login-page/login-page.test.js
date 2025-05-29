@@ -1,5 +1,11 @@
 import React from 'react'
-import {screen, render, fireEvent, waitFor} from '@testing-library/react'
+import {
+  screen,
+  render,
+  fireEvent,
+  waitFor,
+  waitForElementToBeRemoved,
+} from '@testing-library/react'
 import {setupServer} from 'msw/node'
 
 import {LoginPage} from './login-page'
@@ -49,8 +55,13 @@ describe('when the user leaves empty fields and clicks the submit button', () =>
 
 describe('when the user fills the fields and clicks the submit button', () => {
   it('must not display the required messages', async () => {
-    screen.getByLabelText(/email/i).value = 'john.do@test.com'
-    screen.getByLabelText(/password/i).value = 'Aa123456789!@#'
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: {value: 'john.do@test.com'},
+    })
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: {value: 'Aa123456789!@#'},
+    })
+
     fireEvent.click(screen.getByRole('button', {name: /send/i}))
 
     expect(screen.queryByText(/the email is required/i)).not.toBeInTheDocument()
@@ -141,12 +152,38 @@ then change with valid value and blur again`, () => {
 
 describe('when the user submit the login form with valid data', () => {
   it('must disable the submit button while the form page is fetching the data', async () => {
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: {value: 'john.do@test.com'},
+    })
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: {value: 'Aa123456789!@#'},
+    })
+
     fireEvent.click(screen.getByRole('button', {name: /send/i}))
 
     expect(screen.getByRole('button', {name: /send/i})).toBeDisabled()
 
     await waitFor(() =>
       expect(screen.getByRole('button', {name: /send/i})).not.toBeDisabled(),
+    )
+  })
+
+  it('must be a loading indicator at the top of the form while it is fetching', async () => {
+    expect(screen.queryByTestId('loading-indicator')).not.toBeInTheDocument()
+
+    fireEvent.change(screen.getByLabelText(/email/i), {
+      target: {value: 'john.do@test.com'},
+    })
+    fireEvent.change(screen.getByLabelText(/password/i), {
+      target: {value: 'Aa123456789!@#'},
+    })
+
+    fireEvent.click(screen.getByRole('button', {name: /send/i}))
+
+    expect(screen.getByTestId('loading-indicator')).toBeInTheDocument()
+
+    await waitForElementToBeRemoved(() =>
+      screen.queryByTestId('loading-indicator'),
     )
   })
 })
