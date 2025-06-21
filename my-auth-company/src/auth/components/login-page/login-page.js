@@ -1,6 +1,7 @@
 import React, {useState} from 'react'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
+import {login} from '../../services'
 
 const passwordValidationsMsg =
   'The password must contain at least 8 characters, one upper case letter, one number and one special character'
@@ -24,9 +25,10 @@ export const LoginPage = () => {
   )
   const [formValues, setFormValues] = useState({email: '', password: ''})
   const [isFetching, setIsFetching] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
-  const handleSubmit = async e => {
-    e.preventDefault()
+  const validateForm = () => {
     const {email, password} = formValues
 
     const isEmailEmpty = !email
@@ -39,14 +41,34 @@ export const LoginPage = () => {
     if (isPasswordEmpty) {
       setPasswordValidationMessage('The password is required')
     }
+    return isEmailEmpty || isPasswordEmpty
+  }
 
-    if (isEmailEmpty || isPasswordEmpty) return
+  const handleSubmit = async e => {
+    e.preventDefault()
 
-    setIsFetching(true)
+    if (validateForm()) return
 
-    await fetch('/login', {method: 'POST'})
+    try {
+      setIsFetching(true)
+      const response = await login()
 
-    setIsFetching(false)
+      if (!response.ok) {
+        throw response
+      }
+      setIsFetching(false)
+    } catch (err) {
+      const data = await err.json()
+      setErrorMessage(data.message)
+      setIsOpen(true)
+    } finally {
+      setIsFetching(false)
+    }
+    // setIsFetching(true)
+
+    // await login()
+
+    // setIsFetching(false)
   }
 
   const handleChange = ({target: {value, name}}) => {
@@ -101,6 +123,7 @@ export const LoginPage = () => {
           Send
         </Button>
       </form>
+      <span>{errorMessage}</span>
     </>
   )
 }

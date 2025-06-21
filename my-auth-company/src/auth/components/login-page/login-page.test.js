@@ -1,3 +1,4 @@
+import {rest} from 'msw'
 import React from 'react'
 import {
   screen,
@@ -10,6 +11,17 @@ import {setupServer} from 'msw/node'
 
 import {LoginPage} from './login-page'
 import {handlers} from '../../../mocks/handlers'
+
+const getSendButton = () => screen.getByRole('button', {name: /send/i})
+
+const fillInputsWithValidValues = () => {
+  fireEvent.change(screen.getByLabelText(/email/i), {
+    target: {value: 'john.do@test.com'},
+  })
+  fireEvent.change(screen.getByLabelText(/password/i), {
+    target: {value: 'Aa123456789!@#'},
+  })
+}
 
 const passwordValidationMessage =
   'The password must contain at least 8 characters, one upper case letter, one number and one special character'
@@ -152,12 +164,7 @@ then change with valid value and blur again`, () => {
 
 describe('when the user submit the login form with valid data', () => {
   it('must disable the submit button while the form page is fetching the data', async () => {
-    fireEvent.change(screen.getByLabelText(/email/i), {
-      target: {value: 'john.do@test.com'},
-    })
-    fireEvent.change(screen.getByLabelText(/password/i), {
-      target: {value: 'Aa123456789!@#'},
-    })
+    fillInputsWithValidValues()
 
     fireEvent.click(screen.getByRole('button', {name: /send/i}))
 
@@ -178,7 +185,7 @@ describe('when the user submit the login form with valid data', () => {
       target: {value: 'Aa123456789!@#'},
     })
 
-    fireEvent.click(screen.getByRole('button', {name: /send/i}))
+    fireEvent.click(getSendButton())
 
     expect(screen.getByTestId('loading-indicator')).toBeInTheDocument()
 
@@ -189,7 +196,26 @@ describe('when the user submit the login form with valid data', () => {
 })
 
 describe('when the user submit the login form with valid data and there is an unexpected server error', () => {
-  it('must display the error message "Unexpected error, please try again" from the api', async () => {})
+  it('must display the error message "Unexpected error, please try again" from the api', async () => {
+    // setup - config server
+    server.use(
+      rest.post('/login', (req, res, ctx) =>
+        res(
+          ctx.status(500),
+          ctx.json({message: 'Unexpected error, please try again'}),
+        ),
+      ),
+    )
+
+    // trigger submit form
+    fillInputsWithValidValues()
+    fireEvent.click(getSendButton())
+
+    // expect display error message
+    expect(
+      await screen.findByText(/unexpected error, please try again/i),
+    ).toBeInTheDocument()
+  })
 })
 
 describe('when the user submit the login form with valid data and there is an invalid credentials error', () => {
