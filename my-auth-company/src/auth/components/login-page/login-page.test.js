@@ -18,12 +18,15 @@ const HTTP_OK_STATUS = 200
 
 const getSendButton = () => screen.getByRole('button', {name: /send/i})
 
-const fillInputsWithValidValues = () => {
+const fillInputs = ({
+  email = 'john.do@test.com',
+  password = 'Aa123456789!@#',
+} = {}) => {
   fireEvent.change(screen.getByLabelText(/email/i), {
-    target: {value: 'john.do@test.com'},
+    target: {value: email},
   })
   fireEvent.change(screen.getByLabelText(/password/i), {
-    target: {value: 'Aa123456789!@#'},
+    target: {value: password},
   })
 }
 
@@ -168,7 +171,7 @@ then change with valid value and blur again`, () => {
 
 describe('when the user submit the login form with valid data', () => {
   it('must disable the submit button while the form page is fetching the data', async () => {
-    fillInputsWithValidValues()
+    fillInputs()
 
     fireEvent.click(screen.getByRole('button', {name: /send/i}))
 
@@ -205,14 +208,18 @@ describe('when the user submit the login form with valid data and there is an un
     server.use(
       rest.post('/login', (req, res, ctx) =>
         res(
-          ctx.status(500),
+          ctx.status(HTTP_UNEXPECTED_ERROR_STATUS),
           ctx.json({message: 'Unexpected error, please try again'}),
         ),
       ),
     )
 
+    expect(
+      screen.queryByText(/unexpected error, please try again/i),
+    ).not.toBeInTheDocument()
+
     // trigger submit form
-    fillInputsWithValidValues()
+    fillInputs()
     fireEvent.click(getSendButton())
 
     // expect display error message
@@ -223,5 +230,32 @@ describe('when the user submit the login form with valid data and there is an un
 })
 
 describe('when the user submit the login form with valid data and there is an invalid credentials error', () => {
-  it('must display the error message "The email or password are not correct" from the api', async () => {})
+  it('must display the error message "The email or password are not correct" from the api', async () => {
+    // setup server
+    server.use(
+      rest.post('/login', (req, res, ctx) => {
+        const {email, password} = req.body
+
+        if (email === 'wrong@mail.com' && password === 'Aa12345678$') {
+          return res(
+            ctx.status(HTTP_INVALID_CREDENTIALS_STATUS),
+            ctx.json({message: 'The email or password are not correct'}),
+          )
+        }
+
+        return res(
+          ctx.status(HTTP_OK_STATUS),
+          ctx.json({message: 'Unexpected error, please try again'}),
+        )
+      }),
+    )
+    // trigger - submit form
+    fillInputs({email: 'wrong@mail.com', password: 'Aa12345678$'})
+    fireEvent.click(getSendButton())
+
+    // expects error message
+    expect(
+      await screen.findByText(/the email or password are not correct/i),
+    ).toBeInTheDocument()
+  })
 })
