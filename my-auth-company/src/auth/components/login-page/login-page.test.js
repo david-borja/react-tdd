@@ -10,11 +10,8 @@ import {
 import {setupServer} from 'msw/node'
 
 import {LoginPage} from './login-page'
-import {handlers} from '../../../mocks/handlers'
-
-const HTTP_UNEXPECTED_ERROR_STATUS = 500
-const HTTP_INVALID_CREDENTIALS_STATUS = 401
-const HTTP_OK_STATUS = 200
+import {handleInvalidCredentials, handlers} from '../../../mocks/handlers'
+import {HTTP_UNEXPECTED_ERROR_STATUS} from '../../../consts'
 
 const getSendButton = () => screen.getByRole('button', {name: /send/i})
 
@@ -231,26 +228,18 @@ describe('when the user submit the login form with valid data and there is an un
 
 describe('when the user submit the login form with valid data and there is an invalid credentials error', () => {
   it('must display the error message "The email or password are not correct" from the api', async () => {
+    const wrongEmail = 'wrong@mail.com'
+    const wrongPassword = 'Aa12345678$'
+
     // setup server
-    server.use(
-      rest.post('/login', (req, res, ctx) => {
-        const {email, password} = req.body
+    server.use(handleInvalidCredentials({wrongEmail, wrongPassword}))
 
-        if (email === 'wrong@mail.com' && password === 'Aa12345678$') {
-          return res(
-            ctx.status(HTTP_INVALID_CREDENTIALS_STATUS),
-            ctx.json({message: 'The email or password are not correct'}),
-          )
-        }
+    expect(
+      screen.queryByText(/the email or password are not correct/i),
+    ).not.toBeInTheDocument()
 
-        return res(
-          ctx.status(HTTP_OK_STATUS),
-          ctx.json({message: 'Unexpected error, please try again'}),
-        )
-      }),
-    )
     // trigger - submit form
-    fillInputs({email: 'wrong@mail.com', password: 'Aa12345678$'})
+    fillInputs({email: wrongEmail, password: wrongPassword})
     fireEvent.click(getSendButton())
 
     // expects error message
