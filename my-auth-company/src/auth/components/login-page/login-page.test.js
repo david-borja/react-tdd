@@ -12,6 +12,10 @@ import {setupServer} from 'msw/node'
 import {LoginPage} from './login-page'
 import {handlers} from '../../../mocks/handlers'
 
+const HTTP_UNEXPECTED_ERROR_STATUS = 500
+const HTTP_INVALID_CREDENTIALS_STATUS = 401
+const HTTP_OK_STATUS = 200
+
 const getSendButton = () => screen.getByRole('button', {name: /send/i})
 
 const fillInputsWithValidValues = () => {

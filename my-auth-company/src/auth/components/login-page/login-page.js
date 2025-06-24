@@ -49,9 +49,11 @@ export const LoginPage = () => {
 
     if (validateForm()) return
 
+    const {email, password} = formValues
+
     try {
       setIsFetching(true)
-      const response = await login()
+      const response = await login({email, password})
 
       if (!response.ok) {
         throw response
@@ -64,11 +66,6 @@ export const LoginPage = () => {
     } finally {
       setIsFetching(false)
     }
-    // setIsFetching(true)
-
-    // await login()
-
-    // setIsFetching(false)
   }
 
   const handleChange = ({target: {value, name}}) => {
@@ -94,6 +91,8 @@ export const LoginPage = () => {
 
     setPasswordValidationMessage('')
   }
+
+  const handleClose = () => setIsOpen(false)
 
   return (
     <>
@@ -123,7 +122,16 @@ export const LoginPage = () => {
           Send
         </Button>
       </form>
-      <span>{errorMessage}</span>
+      {isOpen && (
+        <>
+          <span>
+            <button type="button" onClick={handleClose}>
+              x
+            </button>
+            {errorMessage}
+          </span>
+        </>
+      )}
     </>
   )
 }
