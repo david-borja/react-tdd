@@ -16,3 +16,10 @@ describe('when the user is not authenticated and enters on employee page', () =>
     expect(screen.getByText(/login page/i)).toBeInTheDocument()
   })
 })
+
+describe('when the user is authenticated an enters on admin page', () => {
+  it('must show admin page', () => {
+    renderWithRouter(<AppRouter isAuth />, {route: '/admin'})
+    expect(screen.getByText(/admin page/i)).toBeInTheDocument()
+  })
+})
