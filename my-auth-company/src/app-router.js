@@ -1,23 +1,10 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import {Switch, Route, Redirect} from 'react-router-dom/'
+import {Switch, Route} from 'react-router-dom/'
 import {LoginPage} from './auth/components/login-page'
-
-const AdminPage = () => <h1>Admin page</h1>
-
-const EmployeePage = () => <h1>Employee page</h1>
-
-const PrivateRoute = ({children, path, isAuth}) => (
-  <Route path={path} exact>
-    {isAuth ? children : <Redirect to="/" />}
-  </Route>
-)
-
-PrivateRoute.propTypes = {
-  children: PropTypes.node.isRequired,
-  path: PropTypes.string.isRequired,
-  isAuth: PropTypes.bool.isRequired,
-}
+import {PrivateRoute} from './utils/components/private-route'
+import {AdminPage} from './admin/components/admin-page/admin-page'
+import {EmployeePage} from './employee/components/employee-page/employee-page'
 
 export const AppRouter = ({isAuth}) => {
   return (
