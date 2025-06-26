@@ -2,7 +2,6 @@ import {rest} from 'msw'
 import React from 'react'
 import {
   screen,
-  render,
   fireEvent,
   waitFor,
   waitForElementToBeRemoved,
@@ -12,6 +11,7 @@ import {setupServer} from 'msw/node'
 import {LoginPage} from './login-page'
 import {handleInvalidCredentials, handlers} from '../../../mocks/handlers'
 import {HTTP_UNEXPECTED_ERROR_STATUS} from '../../../consts'
+import {renderWithRouter} from '../../../utils/tests'
 
 const getSendButton = () => screen.getByRole('button', {name: /send/i})
 
@@ -34,7 +34,7 @@ const getPasswordInput = () => screen.getByLabelText(/password/i)
 
 const server = setupServer(...handlers)
 
-beforeEach(() => render(<LoginPage />))
+beforeEach(() => renderWithRouter(<LoginPage />))
 
 beforeAll(() => server.listen())
 

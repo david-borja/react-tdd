@@ -1,7 +1,10 @@
 import React, {useState} from 'react'
+import PropTypes from 'prop-types'
+import {Redirect} from 'react-router-dom'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import {login} from '../../services'
+import {ADMIN_ROLE} from '../../../consts'
 
 const passwordValidationsMsg =
   'The password must contain at least 8 characters, one upper case letter, one number and one special character'
@@ -18,7 +21,7 @@ const validatePassword = password => {
   return passwordRulesRegex.test(password)
 }
 
-export const LoginPage = () => {
+export const LoginPage = ({onSuccessLogin}) => {
   const [emailValidationMessage, setEmailValidationMessage] = useState('')
   const [passwordlValidationMessage, setPasswordValidationMessage] = useState(
     '',
@@ -27,6 +30,7 @@ export const LoginPage = () => {
   const [isFetching, setIsFetching] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [user, setUser] = useState({role: ''})
 
   const validateForm = () => {
     const {email, password} = formValues
@@ -58,7 +62,12 @@ export const LoginPage = () => {
       if (!response.ok) {
         throw response
       }
-      setIsFetching(false)
+
+      const {
+        user: {role},
+      } = await response.json()
+      setUser({role})
+      onSuccessLogin()
     } catch (err) {
       const data = await err.json()
       setErrorMessage(data.message)
@@ -93,6 +102,10 @@ export const LoginPage = () => {
   }
 
   const handleClose = () => setIsOpen(false)
+
+  if (!isFetching && user.role === ADMIN_ROLE) {
+    return <Redirect to="/admin" />
+  }
 
   return (
     <>
@@ -134,6 +147,14 @@ export const LoginPage = () => {
       )}
     </>
   )
+}
+
+LoginPage.propTypes = {
+  onSuccessLogin: PropTypes.func,
+}
+
+LoginPage.defaultProps = {
+  onSuccessLogin: () => {},
 }
 
 export default {LoginPage}
