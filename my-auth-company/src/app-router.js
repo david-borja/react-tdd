@@ -1,4 +1,5 @@
 import React from 'react'
+import PropTypes from 'prop-types'
 import {Switch, Route, Redirect} from 'react-router-dom/'
 import {LoginPage} from './auth/components/login-page'
 
@@ -8,18 +9,29 @@ const EmployeePage = () => <h1>Employee page</h1>
 
 const isAuth = false
 
+const PrivateRoute = ({children, path}) => (
+  <Route path={path} exact>
+    {isAuth ? {children} : <Redirect to="/" />}
+  </Route>
+)
+
+PrivateRoute.propTypes = {
+  children: PropTypes.node.isRequired,
+  path: PropTypes.string.isRequired,
+}
+
 export const AppRouter = () => {
   return (
     <Switch>
       <Route path="/" exact>
         <LoginPage />
       </Route>
-      <Route path="/admin" exact>
-        {isAuth ? <AdminPage /> : <Redirect to="/" />}
-      </Route>
-      <Route path="/employee" exact>
-        {isAuth ? <EmployeePage /> : <Redirect to="/" />}
-      </Route>
+      <PrivateRoute path="/admin">
+        <AdminPage />
+      </PrivateRoute>
+      <PrivateRoute path="/employee">
+        <EmployeePage />
+      </PrivateRoute>
     </Switch>
   )
 }
