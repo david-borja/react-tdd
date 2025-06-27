@@ -1,47 +1,26 @@
-import React, {useState} from 'react'
-import PropTypes from 'prop-types'
-import {Switch, Route} from 'react-router-dom/'
+import React from 'react'
+import {Switch, Route, BrowserRouter as Router} from 'react-router-dom/'
 import {LoginPage} from './auth/components/login-page'
 import {PrivateRoute} from './utils/components/private-route'
 import {AdminPage} from './admin/components/admin-page/admin-page'
 import {EmployeePage} from './employee/components/employee-page/employee-page'
-import {AuthContext} from './utils/contexts/auth-context'
 
-export const AppRouter = ({isAuth}) => {
-  const [isUserAuth, setIsUserAuth] = useState(isAuth)
-
-  const handleSuccessLogin = () => {
-    setIsUserAuth(true)
-  }
-
-  const authProviderValue = {
-    isAuth: isUserAuth,
-    handleSuccessLogin,
-  }
-
+export const AppRouter = () => {
   return (
-    <AuthContext.Provider value={authProviderValue}>
+    <Router>
       <Switch>
         <Route path="/" exact>
-          <LoginPage onSuccessLogin={handleSuccessLogin} />
+          <LoginPage />
         </Route>
-        <PrivateRoute path="/admin" isAuth={isUserAuth}>
+        <PrivateRoute path="/admin">
           <AdminPage />
         </PrivateRoute>
-        <PrivateRoute path="/employee" isAuth={isUserAuth}>
+        <PrivateRoute path="/employee">
           <EmployeePage />
         </PrivateRoute>
       </Switch>
-    </AuthContext.Provider>
+    </Router>
   )
-}
-
-AppRouter.propTypes = {
-  isAuth: PropTypes.bool,
-}
-
-AppRouter.defaultProps = {
-  isAuth: false,
 }
 
 export default {AppRouter}

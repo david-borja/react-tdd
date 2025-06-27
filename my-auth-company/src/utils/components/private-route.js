@@ -2,16 +2,22 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import {Route, Redirect} from 'react-router-dom'
 
-export const PrivateRoute = ({children, path, isAuth}) => (
-  <Route path={path} exact>
-    {isAuth ? children : <Redirect to="/" />}
-  </Route>
-)
+export const PrivateRoute = ({children, path, isAuth}) => {
+  return (
+    <Route path={path} exact>
+      {isAuth ? children : <Redirect to="/" />}
+    </Route>
+  )
+}
 
 PrivateRoute.propTypes = {
   children: PropTypes.node.isRequired,
   path: PropTypes.string.isRequired,
-  isAuth: PropTypes.bool.isRequired,
+  isAuth: PropTypes.bool,
+}
+
+PrivateRoute.defaultProps = {
+  isAuth: false,
 }
 
 export default {PrivateRoute}
