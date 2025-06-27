@@ -22,7 +22,7 @@ const validatePassword = password => {
 }
 
 export const LoginPage = () => {
-  const {handleSuccessLogin} = useContext(AuthContext)
+  const {handleSuccessLogin, user} = useContext(AuthContext)
   const [emailValidationMessage, setEmailValidationMessage] = useState('')
   const [passwordlValidationMessage, setPasswordValidationMessage] = useState(
     '',
@@ -31,7 +31,6 @@ export const LoginPage = () => {
   const [isFetching, setIsFetching] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
-  const [user, setUser] = useState({role: ''})
 
   const validateForm = () => {
     const {email, password} = formValues
@@ -67,8 +66,7 @@ export const LoginPage = () => {
       const {
         user: {role},
       } = await response.json()
-      setUser({role})
-      handleSuccessLogin()
+      handleSuccessLogin({role})
     } catch (err) {
       const data = await err.json()
       setErrorMessage(data.message)

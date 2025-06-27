@@ -1,6 +1,6 @@
 import React from 'react'
 import {BrowserRouter as Router} from 'react-router-dom'
-import {render} from '@testing-library/react'
+import {render, fireEvent, screen} from '@testing-library/react'
 import {AuthGuard} from './components/auth-guard'
 
 export const renderWithRouter = (ui, {route = '/'} = {}) => {
@@ -17,8 +17,24 @@ export const renderWithAuthProvider = (ui, {isAuth = false} = {}) => {
 
 export const goTo = route => window.history.pushState({}, 'Test page', route)
 
+export const getSendButton = () => screen.getByRole('button', {name: /send/i})
+
+export const fillInputs = ({
+  email = 'john.do@test.com',
+  password = 'Aa123456789!@#',
+} = {}) => {
+  fireEvent.change(screen.getByLabelText(/email/i), {
+    target: {value: email},
+  })
+  fireEvent.change(screen.getByLabelText(/password/i), {
+    target: {value: password},
+  })
+}
+
 export default {
   renderWithRouter,
   renderWithAuthProvider,
   goTo,
+  getSendButton,
+  fillInputs,
 }

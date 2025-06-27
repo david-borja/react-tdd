@@ -2,22 +2,13 @@ import React from 'react'
 import {fireEvent, screen} from '@testing-library/react'
 import {setupServer} from 'msw/node'
 import {AppRouter} from './app-router'
-import {renderWithAuthProvider, goTo} from './utils/tests'
+import {
+  renderWithAuthProvider,
+  goTo,
+  fillInputs,
+  getSendButton,
+} from './utils/tests'
 import {handlers} from './mocks/handlers'
-
-const getSendButton = () => screen.getByRole('button', {name: /send/i})
-
-const fillInputs = ({
-  email = 'john.do@test.com',
-  password = 'Aa123456789!@#',
-} = {}) => {
-  fireEvent.change(screen.getByLabelText(/email/i), {
-    target: {value: email},
-  })
-  fireEvent.change(screen.getByLabelText(/password/i), {
-    target: {value: password},
-  })
-}
 
 const server = setupServer(...handlers)
 
