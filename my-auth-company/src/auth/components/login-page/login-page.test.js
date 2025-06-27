@@ -12,6 +12,7 @@ import {LoginPage} from './login-page'
 import {handleInvalidCredentials, handlers} from '../../../mocks/handlers'
 import {HTTP_UNEXPECTED_ERROR_STATUS} from '../../../consts'
 import {renderWithRouter} from '../../../utils/tests'
+import {AuthContext} from '../../../utils/contexts/auth-context'
 
 const getSendButton = () => screen.getByRole('button', {name: /send/i})
 
@@ -34,7 +35,13 @@ const getPasswordInput = () => screen.getByLabelText(/password/i)
 
 const server = setupServer(...handlers)
 
-beforeEach(() => renderWithRouter(<LoginPage />))
+beforeEach(() =>
+  renderWithRouter(
+    <AuthContext.Provider value={{handleSuccessLogin: jest.fn()}}>
+      <LoginPage />
+    </AuthContext.Provider>,
+  ),
+)
 
 beforeAll(() => server.listen())
 

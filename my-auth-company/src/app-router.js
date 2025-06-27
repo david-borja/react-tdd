@@ -5,6 +5,7 @@ import {LoginPage} from './auth/components/login-page'
 import {PrivateRoute} from './utils/components/private-route'
 import {AdminPage} from './admin/components/admin-page/admin-page'
 import {EmployeePage} from './employee/components/employee-page/employee-page'
+import {AuthContext} from './utils/contexts/auth-context'
 
 export const AppRouter = ({isAuth}) => {
   const [isUserAuth, setIsUserAuth] = useState(isAuth)
@@ -13,18 +14,25 @@ export const AppRouter = ({isAuth}) => {
     setIsUserAuth(true)
   }
 
+  const authProviderValue = {
+    isAuth: isUserAuth,
+    handleSuccessLogin,
+  }
+
   return (
-    <Switch>
-      <Route path="/" exact>
-        <LoginPage onSuccessLogin={handleSuccessLogin} />
-      </Route>
-      <PrivateRoute path="/admin" isAuth={isUserAuth}>
-        <AdminPage />
-      </PrivateRoute>
-      <PrivateRoute path="/employee" isAuth={isUserAuth}>
-        <EmployeePage />
-      </PrivateRoute>
-    </Switch>
+    <AuthContext.Provider value={authProviderValue}>
+      <Switch>
+        <Route path="/" exact>
+          <LoginPage onSuccessLogin={handleSuccessLogin} />
+        </Route>
+        <PrivateRoute path="/admin" isAuth={isUserAuth}>
+          <AdminPage />
+        </PrivateRoute>
+        <PrivateRoute path="/employee" isAuth={isUserAuth}>
+          <EmployeePage />
+        </PrivateRoute>
+      </Switch>
+    </AuthContext.Provider>
   )
 }
 
