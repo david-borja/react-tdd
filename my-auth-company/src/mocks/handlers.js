@@ -13,7 +13,7 @@ export const handlers = [
     if (email === 'admin@mail.com') {
       role = ADMIN_ROLE
     }
-    return res(ctx.status(200), ctx.json({user: {role}}))
+    return res(ctx.status(200), ctx.json({user: {role, username: 'John Doe'}}))
   }),
   // Handles a GET /user request
   rest.get('/user', null),
