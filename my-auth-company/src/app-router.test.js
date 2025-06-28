@@ -55,3 +55,16 @@ describe.skip('when the admin is authenticated in login page', () => {
     expect(await screen.findByText(/john doe/i)).toBeInTheDocument()
   })
 })
+
+describe('when the admin goes to employees page', () => {
+  it('must have access', () => {
+    goTo('/admin')
+    renderWithAuthProvider(<AppRouter />, {isAuth: true})
+
+    // click to employees page link
+    fireEvent.click(screen.getByText(/employees/i))
+
+    // expect employees page header / title
+    expect(screen.getByText(/^employees page/i)).toBeInTheDocument()
+  })
+})
