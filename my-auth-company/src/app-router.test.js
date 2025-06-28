@@ -9,6 +9,7 @@ import {
   getSendButton,
 } from './utils/tests'
 import {handlers} from './mocks/handlers'
+import {ADMIN_EMAIL, EMPLOYEE_EMAIL} from './consts'
 
 const server = setupServer(...handlers)
 
@@ -47,7 +48,7 @@ describe.skip('when the admin is authenticated in login page', () => {
     renderWithAuthProvider(<AppRouter />, {isAuth: true})
 
     // fill form as admin
-    fillInputs({email: 'admin@mail.com'})
+    fillInputs({email: ADMIN_EMAIL})
     fireEvent.click(getSendButton())
 
     // expect admin page
@@ -66,5 +67,19 @@ describe('when the admin goes to employees page', () => {
 
     // expect employees page header / title
     expect(screen.getByText(/^employees page/i)).toBeInTheDocument()
+  })
+})
+
+describe('when the employee is authenticated in login page', () => {
+  it('must be redirected to employee page', async () => {
+    renderWithAuthProvider(<AppRouter />)
+
+    fillInputs({email: EMPLOYEE_EMAIL})
+
+    // click to employees page link
+    fireEvent.click(getSendButton())
+
+    // expect employees page header / title
+    expect(await screen.getByText(/employee page/i)).toBeInTheDocument()
   })
 })
