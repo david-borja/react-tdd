@@ -9,10 +9,18 @@ export const renderWithRouter = (ui, {route = '/'} = {}) => {
   return render(ui, {wrapper: Router})
 }
 
-export const renderWithAuthProvider = (ui, {isAuth = false} = {}) => {
-  return render(<AuthGuard isAuth={isAuth}>{ui}</AuthGuard>, {
-    wrapper: Router,
-  })
+export const renderWithAuthProvider = (
+  ui,
+  {isAuth = false, role = ''} = {},
+) => {
+  return render(
+    <AuthGuard isAuth={isAuth} initialRole={role}>
+      {ui}
+    </AuthGuard>,
+    {
+      wrapper: Router,
+    },
+  )
 }
 
 export const goTo = route => window.history.pushState({}, 'Test page', route)

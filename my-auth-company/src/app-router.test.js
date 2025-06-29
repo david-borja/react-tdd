@@ -9,7 +9,7 @@ import {
   getSendButton,
 } from './utils/tests'
 import {handlers} from './mocks/handlers'
-import {ADMIN_EMAIL, EMPLOYEE_EMAIL} from './consts'
+import {ADMIN_EMAIL, ADMIN_ROLE, EMPLOYEE_EMAIL, EMPLOYEE_ROLE} from './consts'
 
 const server = setupServer(...handlers)
 
@@ -35,15 +35,7 @@ describe('when the user is not authenticated and enters on employee page', () =>
   })
 })
 
-describe('when the user is authenticated an enters on admin page', () => {
-  it('must be redirected to login page', () => {
-    goTo('/admin')
-    renderWithAuthProvider(<AppRouter />, {isAuth: true})
-    expect(screen.getByText(/login page/i)).toBeInTheDocument()
-  })
-})
-
-describe.skip('when the admin is authenticated in login page', () => {
+describe('when the admin is authenticated in login page', () => {
   it('must be redirected to admin page', async () => {
     renderWithAuthProvider(<AppRouter />, {isAuth: true})
 
@@ -60,13 +52,13 @@ describe.skip('when the admin is authenticated in login page', () => {
 describe('when the admin goes to employees page', () => {
   it('must have access', () => {
     goTo('/admin')
-    renderWithAuthProvider(<AppRouter />, {isAuth: true})
+    renderWithAuthProvider(<AppRouter />, {isAuth: true, role: ADMIN_ROLE})
 
     // click to employees page link
-    fireEvent.click(screen.getByText(/employees/i))
+    fireEvent.click(screen.getByText(/employee/i))
 
     // expect employees page header / title
-    expect(screen.getByText(/^employees page/i)).toBeInTheDocument()
+    expect(screen.getByText(/^employee page/i)).toBeInTheDocument()
   })
 })
 
@@ -76,10 +68,17 @@ describe('when the employee is authenticated in login page', () => {
 
     fillInputs({email: EMPLOYEE_EMAIL})
 
-    // click to employees page link
     fireEvent.click(getSendButton())
 
-    // expect employees page header / title
-    expect(await screen.getByText(/employee page/i)).toBeInTheDocument()
+    expect(await screen.findByText(/employee page/i)).toBeInTheDocument()
+  })
+})
+
+describe('when the employee goes to admin page', () => {
+  it('must redirect to employee page', () => {
+    goTo('/admin')
+    renderWithAuthProvider(<AppRouter />, {isAuth: true, role: EMPLOYEE_ROLE})
+
+    expect(screen.getByText(/employee page/i)).toBeInTheDocument()
   })
 })

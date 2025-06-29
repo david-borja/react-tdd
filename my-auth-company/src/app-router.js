@@ -4,6 +4,7 @@ import {LoginPage} from './auth/components/login-page'
 import {PrivateRoute} from './utils/components/private-route'
 import {AdminPage} from './admin/components/admin-page/admin-page'
 import {EmployeePage} from './employee/components/employee-page/employee-page'
+import {ADMIN_ROLE} from './consts'
 
 export const AppRouter = () => {
   return (
@@ -12,7 +13,7 @@ export const AppRouter = () => {
         <Route path="/" exact>
           <LoginPage />
         </Route>
-        <PrivateRoute path="/admin">
+        <PrivateRoute path="/admin" allowRoles={[ADMIN_ROLE]}>
           <AdminPage />
         </PrivateRoute>
         <PrivateRoute path="/employee">

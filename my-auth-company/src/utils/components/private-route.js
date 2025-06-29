@@ -1,11 +1,25 @@
-import React from 'react'
+import React, {useContext} from 'react'
 import PropTypes from 'prop-types'
 import {Route, Redirect} from 'react-router-dom'
+import {AuthContext} from '../contexts/auth-context'
 
-export const PrivateRoute = ({children, path, isAuth}) => {
+export const PrivateRoute = ({children, path, allowRoles}) => {
+  const {
+    isAuth,
+    user: {role},
+  } = useContext(AuthContext)
+
+  const getIsAllowed = () => {
+    if (allowRoles.length > 0) {
+      return allowRoles.includes(role)
+    }
+
+    return true
+  }
+
   return (
     <Route path={path} exact>
-      {isAuth ? children : <Redirect to="/" />}
+      {isAuth && getIsAllowed() ? children : <Redirect to="/" />}
     </Route>
   )
 }
@@ -13,11 +27,11 @@ export const PrivateRoute = ({children, path, isAuth}) => {
 PrivateRoute.propTypes = {
   children: PropTypes.node.isRequired,
   path: PropTypes.string.isRequired,
-  isAuth: PropTypes.bool,
+  allowRoles: PropTypes.arrayOf(PropTypes.string),
 }
 
 PrivateRoute.defaultProps = {
-  isAuth: false,
+  allowRoles: [],
 }
 
 export default {PrivateRoute}

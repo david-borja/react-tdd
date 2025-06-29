@@ -1,4 +1,5 @@
 import React from 'react'
+import {BrowserRouter as Router} from 'react-router-dom'
 import {render, screen} from '@testing-library/react'
 
 import {EmployeePage} from './employee-page'
@@ -10,6 +11,7 @@ const renderWith = ({role, username = 'John Doe'}) => {
     <AuthContext.Provider value={{user: {username, role}}}>
       <EmployeePage />
     </AuthContext.Provider>,
+    {wrapper: Router},
   )
 }
 
@@ -28,5 +30,11 @@ describe('when the employee access to employee page', () => {
     expect(
       screen.queryByRole('button', {name: /delete/i}),
     ).not.toBeInTheDocument()
+  })
+
+  it('the employee username should be displayed on the common navbar', () => {
+    renderWith({role: EMPLOYEE_ROLE, username: 'Joana Doe'})
+
+    expect(screen.getByText(/joana doe/i)).toBeInTheDocument()
   })
 })
